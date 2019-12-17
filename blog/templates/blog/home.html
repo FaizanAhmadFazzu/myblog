@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block content %}{% comment %} 
+    <h1 class="myhead2">My Posts </h1>
+<hr>
+<form class="form-inline">
+<input class="form-control mr-3" placeholder="Search" value="{{ request.GET.si }}" type="text" name="si" />
+<input class="btn btn-dark mr-3" type="submit" value="Search" />
+</form>
+    {% for post in post_list %}
+        <article class="media content-section">
+          <img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="{% url 'profile-detail' {{ user.profile.id }}">{{ post.author }}</a>
+              <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
+            </div>
+            <h2><a class="article-title" href="{% url 'post-detail' post.id %}">{{ post.title }}</a></h2>
+            <img class="card-img-top" src="{{ post.image.url }}" alt="">
+            <p class="article-content">{{ post.content|slice:"0:52"}}...</p>
+            {% if post.liked %}
+            <a class="btn btn-danger btn-sm" href='/blog/post/unlike/{{post.id}}'><span class="fa fa-thumbs-down"></span></a>
+            {% else %}
+            <a class="btn btn-success btn-sm" href='/blog/post/like/{{post.id}}'><span class="fa fa-thumbs-up"></span></a>
+            {% endif %}
+		<a class="btn btn-dark btn-sm" href='/blog/post/{{post.id}}'>Read More</a>
+            {% if user.is_superuser %}
+            <a class="btn btn-danger btn-sm" href='/blog/post/delete/{{post.id}}'><span class="fa fa-trash"></span></a>
+            {% endif %}
+            <span class="badge badge-info">Likes {{post.likedno}}</span>
+          </div>
+        </article>
+    {% endfor %}
+{% endblock content %} {% endcomment %} 
+{% comment %} {% block content %}
+<h1>Blog Index</h1>
+    <hr>
+    {% for post in posts %}
+    <h2><a href="{% url 'blog_detail' post.pk %}">{{post.title}}</a></h2>
+    <small>
+        {{post.created_on.date}} |&nbsp;
+        Categories:&nbsp;
+        {% for category in post.categories.all %}
+        <a href="{% url 'blog_category' category.name %}" >{{category.name}}
+        </a>&nbsp;
+        {% endfor %}
+    </small>
+    <p>{{ post.body | slice:":400"}}...</p>
+    {% endfor %} {% endcomment %}
+{% for post in post_list %}
+<div class="card">
+  <div class="card-header">
+      <img src="{{ post.author.image.url }}" class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|} article-img" alt="">
+    <a href="{% url 'profile-detail' post.author.pk %}" class="mr-2">{{ post.author.name }}</a>
+
+      <small>
+        {{ post.date_posted }} |&nbsp;
+        Categories: &nbsp;
+        {% for category in post.categories.all %}
+          <a href="{% url 'blog_category' category.name %}">{{ category.name }}
+          </a>&nbsp;
+        {% endfor %}
+      </small>
+    </div>
+  <div class="card-body">
+  <img src="{{ post.image.url }}" class="card-img-top" alt="...">
+    <h5 class="card-title">{{ post.title }}</h5>
+    <p class="card-text">{{ post.content | slice:":200" }}</p>
+    {% if post.liked %}
+    <a href="{% url 'post-like' post.id %}" class="btn btn-danger btn-sm"><span class="fa fa-thumbs-down"></span></a>
+    {% else %}
+    <a href="{% url 'post-unlike' post.id %}" class="btn btn-success btn-sm"><span class="fa fa-thumbs-up"></span></a>
+    {% endif %}
+    <a href="{% url 'post-detail' post.id %}" class="btn btn-dark btn-sm">Read More</span></a>
+    {% if user.is_superuser %}
+    <a href="{% url 'post-delete' post.id %}" class="btn btn-danger btn-sm"><span class="fa fa-trash"></span></a>
+    {% endif %}
+    <span class="badge badge-info">Likes {{post.likedno}}</span>
+  </div>
+</div>
+{% endfor %}
+{% endblock content %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ category | title }}</h1>
+    {% for post in posts %}
+        <article class="media content-section">
+            <img src="{{ post.author.profile.image.url }}" alt="" class="rounded-circle article-img">
+            <div class="media-body">
+                <div class="article-metadata">
+                    <a href="#" class="mr-2">{{ post.author }}</a>
+                    <small class="text-muted">{{post.date_posted|date:"F d, Y"}}
+                        {% for category in post.categories.all %}
+                        <a href="{% url 'blog_category' category.name %}">{{ category.name }}</a>
+                        {% endfor %}
+                    </small>
+                </div>
+                <h2><a href="{% url 'post-detail' post.id %}" class="article-title">{{post.title}}</a></h2>
+                <p class="article-content">{{ post.content | slice:":400"}}...</p>
+            </div>
+        </article>
+    {% endfor %}
+{% endblock %}
